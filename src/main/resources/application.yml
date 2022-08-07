@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: USER-SERVICE
+  datasource:    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: nagen  jpa:    hibernate:      ddl-auto: update
+    show-sql: true
+
+server:  port: 1001
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      departmentServiceCircuitBreaker:
+        register-health-indicator: true #what is status of circuit breaker
+        event-consumer-buffer-size: 10 #how many events u r consuming
+        failure-rate-threshold: 50 # for 50% circuit breaker will chamge its status
+        minimum-number-of-calls: 5 #minimum no of calls it should check for
+        automatic-transition-from-open-to-half-open-enabled: true #automatically chamge the status from OPEN to HALF-OPEN
+        wait-duration-in-open-state: 5s #how many seconds circuitbreaker in OPEN state
+        permitted-number-of-calls-in-half-open-state: 3 #how many counts allowed in HALF-OPEN state
+        sliding-window-size: 10 #all operation will be performed based on this count
+        sliding-window-type: count-based #time based also their
+
+# Actuator configuration
+management:  health:    circuitbreakers:      enabled: true
+  endpoints:    web:      exposure:        include: health  endpoint:    health:      show-details: alwayseureka:  client:    fetch-registry: true
+    register-with-eureka: true    service-url:      defaultZone: http://localhost:8761/eureka
+  instance:    hostname: localhost
